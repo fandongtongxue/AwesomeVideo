@@ -36,6 +36,18 @@
   <a href="https://github.com/lkmc2/AwesomeVideoAdmin">后台管理系统</a>
 
 ## 项目运行方式
+环境
+1.安装Redis
+
+brew install redis
+
+//启动
+/usr/local/bin/redis-server /usr/local/etc/redis.conf
+
+
+2.安装FFmpeg
+
+brew install ffmpeg
 
 1. 创建数据库awesome_video。
 
