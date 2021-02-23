@@ -43,7 +43,7 @@ public class BaseController {
         //...其他参数参考类注释
         UploadManager uploadManager = new UploadManager(cfg);
         String accessKey = "JkFGFDvaJ2WDZlvPSnoiNDXUZEdXmbY8qnw7nMBh";
-        String secretKey = "6U5lamt5ei2bgmar3FwDFacg9asRLKt7dNgF0WHJ";
+        String secretKey = "6U5lamt5ei2bgmar3FwDFacg9asRLKt7dNgFWHJ";
         String bucket = "temp";
         Auth auth = Auth.create(accessKey, secretKey);
         String upToken = auth.uploadToken(bucket);
