@@ -1,5 +1,5 @@
 # AwesomeVideo
-基于Spring Boot的《倾心短视频》小程序的**后端API服务**
+基于Spring Boot的短视频的**后端API服务**
 
 ## 项目功能
 + 注册、登陆账号
@@ -31,24 +31,18 @@
 
   本**后端API服务**项目需要与以下两个项目配套使用。
 
-  <a href="https://github.com/lkmc2/AwesomeVideoWxApp">《倾心短视频》微信小程序</a>
+  <a href="https://github.com/fandongtongxue/AwesomeVideoWxApp">《倾心短视频》微信小程序</a>
 
-  <a href="https://github.com/lkmc2/AwesomeVideoAdmin">后台管理系统</a>
+  <a href="https://github.com/fandongtongxue/AwesomeVideoAdmin">后台管理系统</a>
 
 ## 项目运行方式
-环境
+### 环境
 1.安装Redis
-
-brew install redis
-
-//启动
-/usr/local/bin/redis-server /usr/local/etc/redis.conf
-
-
+```brew install redis```
+```/usr/local/bin/redis-server /usr/local/etc/redis.conf```
 2.安装FFmpeg
-
-brew install ffmpeg
-
+```brew install ffmpeg```
+### 流程
 1. 创建数据库awesome_video。
 
 2. 在数据库中运行src/main/resources下的awesome_video.sql文件。
