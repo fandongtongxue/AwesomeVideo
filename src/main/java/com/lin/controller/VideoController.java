@@ -70,13 +70,14 @@ public class VideoController extends BaseController {
 
         FileOutputStream out = null;
         InputStream in = null;
+        String fileName = "";
         try {
             // 上传文件不为空
             if (file != null) {
-                String fileName = file.getOriginalFilename();
+                fileName = file.getOriginalFilename();
                 if (StringUtils.isNoneBlank(fileName)) {
                     // 文件上传的最终保存路径
-                    finalVideoPath = String.format("F:/AwesomeVideoUpload/%s/video/%s", userId, fileName);
+                    finalVideoPath = String.format("/Users/mac/Downloads/Upload/%s/video/%s", userId, fileName);
                     // 设置数据库保存的路径
                     uploadPathDB = String.format("/%s/video/%s", userId, fileName);
 
@@ -127,7 +128,9 @@ public class VideoController extends BaseController {
 
         LOGGER.info("uploadPathDB = {}", uploadPathDB);
         LOGGER.info("coverPath = {}", uploadPathDB + ".jpg");
-        LOGGER.info("finalVideoPath {}= ", finalVideoPath);
+        LOGGER.info("finalVideoPath {} ", finalVideoPath);
+
+        String videoUrl = uploadToQiniu(finalVideoPath,fileName);
 
         // 保存视频信息到数据库
         Video video = new Video();
@@ -137,7 +140,7 @@ public class VideoController extends BaseController {
         video.setVideoWidth(videoWidth);
         video.setVideoHeight(videoHeight);
         video.setVideoDesc(desc);
-        video.setVideoPath(uploadPathDB);
+        video.setVideoPath(videoUrl);
         video.setStatus(VideoStatusEnum.SUCCESS.value);
         video.setCoverPath(uploadPathDB + ".jpg");
         video.setCreateTime(new Date());
