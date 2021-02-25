@@ -12,6 +12,8 @@ import com.qiniu.util.Auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 /**
  * @author lkmc2
  * @date 2018/9/30
@@ -28,7 +30,7 @@ public class BaseController {
     protected static final String USER_REDIS_SESSION = "user-redis-session";
 
     // 静态资源所在路径
-    protected static final String FILE_BASE = "F:/AwesomeVideoUpload";
+    protected static final String FILE_BASE = "F/AwesomeVideoUpload";
 
     // ffmpeg所在路径
     protected static final String FFMPEG_EXE = "ffmpeg";
@@ -47,12 +49,13 @@ public class BaseController {
         String bucket = "temp";
         Auth auth = Auth.create(accessKey, secretKey);
         String upToken = auth.uploadToken(bucket);
+        String filePrefix = UUID.randomUUID().toString();
         try {
-            Response response = uploadManager.put(filePath, key, upToken);
+            Response response = uploadManager.put(filePath, filePrefix+key, upToken);
             //解析上传成功的结果
             DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
             System.out.println("上传之后"+putRet.key);
-            return "http://temp.dl.xiaobingkj.com/"+key;
+            return "http://temp.dl.xiaobingkj.com/"+putRet.key;
         } catch (QiniuException ex) {
             Response r = ex.response;
             System.err.println(r.toString());

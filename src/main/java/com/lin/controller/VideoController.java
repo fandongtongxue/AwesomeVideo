@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,11 +63,10 @@ public class VideoController extends BaseController {
         if (StringUtils.isBlank(userId)) {
             return JsonResult.errorMsg("用户id不能为空");
         }
-        // 文件上传的最终保存路径
+        // 视频文件上传的最终保存路径
         String finalVideoPath = "";
+        // 视频封面上传的最终保存路径
         String finalCoverPath = "";
-        // 数据库保存的路径
-        String uploadPathDB = "";
 
         FileOutputStream out = null;
         InputStream in = null;
@@ -79,12 +79,8 @@ public class VideoController extends BaseController {
                 String[] array = videoFileName.split("\\.");
                 coverFileName = array[0] + ".jpg";
                 if (StringUtils.isNoneBlank(videoFileName)) {
-                    // 文件上传的最终保存路径
-                    finalVideoPath = String.format("/Users/mac/Upload/final/%s/video/%s", userId, videoFileName);
-                    finalCoverPath = String.format("/Users/mac/Upload/final/%s/video/%s", userId, coverFileName);
-                    // 设置数据库保存的路径
-                    uploadPathDB = String.format("/%s/video/%s", userId, videoFileName);
-
+                    finalVideoPath = String.format("%s/%s/video/%s", FILE_BASE,userId, videoFileName);
+                    finalCoverPath = String.format("%s/%s/video/%s", FILE_BASE,userId, coverFileName);
                     File outFile = new File(finalVideoPath);
                     if (outFile.getParentFile() != null && !outFile.getParentFile().isDirectory()) {
                         // 创建父文件夹
@@ -117,21 +113,22 @@ public class VideoController extends BaseController {
         if (StringUtils.isNotBlank(bgmId)) {
             Bgm bgm = bgmService.queryBgmById(bgmId);
             String mp3InputPath = FILE_BASE + bgm.getPath();
+            LOGGER.info("mp3InputPath = {} ", mp3InputPath);
             String videoInputPath = finalVideoPath;
 
-            String videoOutputName = UUID.randomUUID().toString() + ".mp4";
-
-            // 设置数据库保存的路径
-            uploadPathDB = String.format("/%s/video/%s", userId, videoOutputName);
-            finalVideoPath = FILE_BASE + uploadPathDB;
-            finalCoverPath = FILE_BASE + uploadPathDB+".jpg";
+            String filePrefix = UUID.randomUUID().toString();
+            String videoOutputName = filePrefix + ".mp4";
+            String coverOutputName = filePrefix + ".jpg";
+            finalVideoPath = String.format("%s/%s/video/%s", FILE_BASE,userId, videoOutputName);
+            finalCoverPath = String.format("%s/%s/video/%s", FILE_BASE,userId, coverOutputName);
             // 合并视频和背景音乐
             ffmpegUtils.mergeVideoAndBackgroundMusic(videoInputPath, mp3InputPath, videoSeconds, finalVideoPath);
         }
         // 生成视频缩略图
-        ffmpegUtils.createVideoThumbnail(finalVideoPath);
+        File path = new File(ResourceUtils.getURL("classpath:").getPath());
+        if(!path.exists()) path = new File("");
+        ffmpegUtils.createVideoThumbnail(path.getAbsolutePath()+"/"+finalVideoPath);
 
-        LOGGER.info("uploadPathDB = {}", uploadPathDB);
         LOGGER.info("finalVideoPath = {} ", finalVideoPath);
         LOGGER.info("finalCoverPath = {} ", finalCoverPath);
 
