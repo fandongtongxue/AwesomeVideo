@@ -62,24 +62,28 @@ public class VideoController extends BaseController {
         if (StringUtils.isBlank(userId)) {
             return JsonResult.errorMsg("用户id不能为空");
         }
-
         // 文件上传的最终保存路径
         String finalVideoPath = "";
+        String finalCoverPath = "";
         // 数据库保存的路径
-        String uploadPathDB = String.format("/%s/video", userId);
+        String uploadPathDB = "";
 
         FileOutputStream out = null;
         InputStream in = null;
-        String fileName = "";
+        String videoFileName = "";
+        String coverFileName = "";
         try {
             // 上传文件不为空
             if (file != null) {
-                fileName = file.getOriginalFilename();
-                if (StringUtils.isNoneBlank(fileName)) {
+                videoFileName = file.getOriginalFilename();
+                String[] array = videoFileName.split("\\.");
+                coverFileName = array[0] + ".jpg";
+                if (StringUtils.isNoneBlank(videoFileName)) {
                     // 文件上传的最终保存路径
-                    finalVideoPath = String.format("/Users/mac/Downloads/Upload/%s/video/%s", userId, fileName);
+                    finalVideoPath = String.format("/Users/mac/Upload/final/%s/video/%s", userId, videoFileName);
+                    finalCoverPath = String.format("/Users/mac/Upload/final/%s/video/%s", userId, coverFileName);
                     // 设置数据库保存的路径
-                    uploadPathDB = String.format("/%s/video/%s", userId, fileName);
+                    uploadPathDB = String.format("/%s/video/%s", userId, videoFileName);
 
                     File outFile = new File(finalVideoPath);
                     if (outFile.getParentFile() != null && !outFile.getParentFile().isDirectory()) {
@@ -120,6 +124,7 @@ public class VideoController extends BaseController {
             // 设置数据库保存的路径
             uploadPathDB = String.format("/%s/video/%s", userId, videoOutputName);
             finalVideoPath = FILE_BASE + uploadPathDB;
+            finalCoverPath = FILE_BASE + uploadPathDB+".jpg";
             // 合并视频和背景音乐
             ffmpegUtils.mergeVideoAndBackgroundMusic(videoInputPath, mp3InputPath, videoSeconds, finalVideoPath);
         }
@@ -127,10 +132,11 @@ public class VideoController extends BaseController {
         ffmpegUtils.createVideoThumbnail(finalVideoPath);
 
         LOGGER.info("uploadPathDB = {}", uploadPathDB);
-        LOGGER.info("coverPath = {}", uploadPathDB + ".jpg");
-        LOGGER.info("finalVideoPath {} ", finalVideoPath);
+        LOGGER.info("finalVideoPath = {} ", finalVideoPath);
+        LOGGER.info("finalCoverPath = {} ", finalCoverPath);
 
-        String videoUrl = uploadToQiniu(finalVideoPath,fileName);
+        String videoUrl = uploadToQiniu(finalVideoPath,videoFileName);
+        String coverUrl = uploadToQiniu(finalCoverPath,coverFileName);
 
         // 保存视频信息到数据库
         Video video = new Video();
@@ -142,7 +148,7 @@ public class VideoController extends BaseController {
         video.setVideoDesc(desc);
         video.setVideoPath(videoUrl);
         video.setStatus(VideoStatusEnum.SUCCESS.value);
-        video.setCoverPath(uploadPathDB + ".jpg");
+        video.setCoverPath(coverUrl);
         video.setCreateTime(new Date());
 
         // 保存视频到数据库，并返回视频id

@@ -31,7 +31,7 @@ public class BaseController {
     protected static final String FILE_BASE = "F:/AwesomeVideoUpload";
 
     // ffmpeg所在路径
-    protected static final String FFMPEG_EXE = "/usr/local/Cellar/ffmpeg/4.3.2";
+    protected static final String FFMPEG_EXE = "ffmpeg";
 
     // 每页分页的记录数
     protected static final Integer PAGE_SIZE = 5;
@@ -43,7 +43,7 @@ public class BaseController {
         //...其他参数参考类注释
         UploadManager uploadManager = new UploadManager(cfg);
         String accessKey = "JkFGFDvaJ2WDZlvPSnoiNDXUZEdXmbY8qnw7nMBh";
-        String secretKey = "6U5lamt5ei2bgmar3FwDFac9asRLKt7dNgF0WHJ";
+        String secretKey = "6U5lamt5ei2bgmar3FwDFacg9asRLKt7dNgF0WHJ";
         String bucket = "temp";
         Auth auth = Auth.create(accessKey, secretKey);
         String upToken = auth.uploadToken(bucket);

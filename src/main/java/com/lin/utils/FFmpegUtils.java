@@ -60,7 +60,7 @@ public class FFmpegUtils {
      * @throws IOException 文件输出输出异常
      */
     public void createVideoThumbnail(String videoOutputPath) throws IOException {
-        List<String> command = Arrays.asList("sudo", ffmpegExe, "-i", videoOutputPath, "-ss", "00:00:01", "-y", "-vframes", "1", videoOutputPath + ".jpg");
+        List<String> command = Arrays.asList("sudo", ffmpegExe, "-i", videoOutputPath, "-ss", "00:00:01", "-t 1 -r 1 -q:v 2 -f image2", videoOutputPath.split("\\.")[0] + ".jpg");
         // 执行命令生成视频缩略图
         executeCommand(command);
     }
