@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.Properties;
 import java.util.UUID;
 
 /**
@@ -112,7 +114,8 @@ public class VideoController extends BaseController {
         // 就查询bgm的信息，并且合并视频，生成新的视频
         if (StringUtils.isNotBlank(bgmId)) {
             Bgm bgm = bgmService.queryBgmById(bgmId);
-            String mp3InputPath = FILE_BASE + bgm.getPath();
+
+            String mp3InputPath = bgm.getPath();
             LOGGER.info("mp3InputPath = {} ", mp3InputPath);
             String videoInputPath = finalVideoPath;
 
@@ -125,9 +128,7 @@ public class VideoController extends BaseController {
             ffmpegUtils.mergeVideoAndBackgroundMusic(videoInputPath, mp3InputPath, videoSeconds, finalVideoPath);
         }
         // 生成视频缩略图
-        File path = new File(ResourceUtils.getURL("classpath:").getPath());
-        if(!path.exists()) path = new File("");
-        ffmpegUtils.createVideoThumbnail(path.getAbsolutePath()+"/"+finalVideoPath);
+        ffmpegUtils.createVideoThumbnail(finalVideoPath);
 
         LOGGER.info("finalVideoPath = {} ", finalVideoPath);
         LOGGER.info("finalCoverPath = {} ", finalCoverPath);

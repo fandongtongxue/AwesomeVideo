@@ -158,12 +158,12 @@
             <scope>test</scope>
         </dependency>
 
-        <!--Spring Boot 热部署-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>
+        <!--Spring Boot 热部署（同类之间无法转换，因此删除）-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-devtools</artifactId>-->
+<!--            <optional>true</optional>-->
+<!--        </dependency>-->
 
         <!--actuator环境监控-->
         <dependency>

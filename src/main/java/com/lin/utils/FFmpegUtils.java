@@ -41,11 +41,11 @@ public class FFmpegUtils {
         // 去掉音轨的视频文件名
         String videoNoAudio = videoInputPath + "-no-audio.mp4";
 
-        List<String> command = Arrays.asList("sudo", ffmpegExe, "-i", videoInputPath, "-c:v", "copy", "-an", videoNoAudio);
+        List<String> command = Arrays.asList(ffmpegExe, "-i", videoInputPath, "-c:v", "copy", "-an", videoNoAudio);
         // 执行命令去掉原视频的音轨
         executeCommand(command);
 
-        command = Arrays.asList("sudo", ffmpegExe, "-i", videoNoAudio, "-i", mp3InputPath, "-t", String.valueOf(seconds), "-y", videoOutputPath);
+        command = Arrays.asList(ffmpegExe, "-i", videoNoAudio, "-i", mp3InputPath, "-t", String.valueOf(seconds), "-y", videoOutputPath);
         // 执行命令合并视频和背景乐
         executeCommand(command);
 
@@ -60,7 +60,7 @@ public class FFmpegUtils {
      * @throws IOException 文件输出输出异常
      */
     public void createVideoThumbnail(String videoOutputPath) throws IOException {
-        List<String> command = Arrays.asList("sudo", ffmpegExe, "-i", videoOutputPath, "-ss", "00:00:01", "-t 1 -r 1 -q:v 2 -f image2", videoOutputPath.split("\\.")[0] + ".jpg");
+        List<String> command = Arrays.asList(ffmpegExe, "-i", videoOutputPath, "-ss", "00:00:01", "-t 1 -r 1 -q:v 2 -f image2", videoOutputPath.split("\\.")[0] + ".jpg");
         // 执行命令生成视频缩略图
         executeCommand(command);
     }
