@@ -69,8 +69,8 @@ public class Swagger2Config {
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("倾心短视频后端API接口文档")
-                .contact(new Contact("lkmc2", "https://github.com/lkmc2", "lkmc2@163.com"))
+                .title("短视频后端API接口文档")
+                .contact(new Contact("fandongtongxue", "https://github.com/fandongtongxue", "admin@fandong.me"))
                 .description("欢迎访问短视频接口文档")
                 .version("1.0")
                 .build();

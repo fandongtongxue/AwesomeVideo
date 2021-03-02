@@ -56,85 +56,16 @@ public class VideoController extends BaseController {
             @ApiImplicitParam(name = "videoSeconds", value = "背景音乐播放长度", required = true, dataType = "double", paramType = "form"),
             @ApiImplicitParam(name = "videoWidth", value = "视频宽度", required = true, dataType = "int", paramType = "form"),
             @ApiImplicitParam(name = "videoHeight", value = "视频高度", required = true, dataType = "int", paramType = "form"),
-            @ApiImplicitParam(name = "desc", value = "视频描述", dataType = "String", paramType = "form")
+            @ApiImplicitParam(name = "desc", value = "视频描述", dataType = "String", paramType = "form"),
+            @ApiImplicitParam(name = "videoUrl", value = "视频地址", dataType = "String", paramType = "form"),
+            @ApiImplicitParam(name = "coverUrl", value = "封面地址", dataType = "String", paramType = "form"),
     })
-    @PostMapping(value = "/upload", headers="content-type=multipart/form-data")
+    @PostMapping(value = "/upload")
     public JsonResult upload(String userId, String bgmId, double videoSeconds,
-                             int videoWidth, int videoHeight, String desc,
-                             @ApiParam(value = "上传的视频", required = true) MultipartFile file) throws IOException {
+                             int videoWidth, int videoHeight, String desc, String videoUrl, String coverUrl) throws IOException {
         if (StringUtils.isBlank(userId)) {
             return JsonResult.errorMsg("用户id不能为空");
         }
-        // 视频文件上传的最终保存路径
-        String finalVideoPath = "";
-        // 视频封面上传的最终保存路径
-        String finalCoverPath = "";
-
-        FileOutputStream out = null;
-        InputStream in = null;
-        String videoFileName = "";
-        String coverFileName = "";
-        try {
-            // 上传文件不为空
-            if (file != null) {
-                videoFileName = file.getOriginalFilename();
-                String[] array = videoFileName.split("\\.");
-                coverFileName = array[0] + ".jpg";
-                if (StringUtils.isNoneBlank(videoFileName)) {
-                    finalVideoPath = String.format("%s/%s/video/%s", FILE_BASE,userId, videoFileName);
-                    finalCoverPath = String.format("%s/%s/video/%s", FILE_BASE,userId, coverFileName);
-                    File outFile = new File(finalVideoPath);
-                    if (outFile.getParentFile() != null && !outFile.getParentFile().isDirectory()) {
-                        // 创建父文件夹
-                        //noinspection ResultOfMethodCallIgnored
-                        outFile.getParentFile().mkdirs();
-                    }
-
-                    out = new FileOutputStream(outFile);
-                    in = file.getInputStream();
-
-                    // 将上传文件的输入流写入服务器上传文件夹
-                    IOUtils.copy(in, out);
-                }
-            } else {
-                JsonResult.errorMsg("上传文件不能为空，上传失败！");
-            }
-        } catch (IOException e) {
-            return JsonResult.errorMsg("上传文件失败！");
-        } finally {
-            // 关闭输入输出流
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
-        }
-
-        // 合并视频和背景乐的工具
-        FFmpegUtils ffmpegUtils = new FFmpegUtils(FFMPEG_EXE);
-
-        // 判断bgmId是否为空，如果不为空，
-        // 就查询bgm的信息，并且合并视频，生成新的视频
-        if (StringUtils.isNotBlank(bgmId)) {
-            Bgm bgm = bgmService.queryBgmById(bgmId);
-
-            String mp3InputPath = bgm.getPath();
-            LOGGER.info("mp3InputPath = {} ", mp3InputPath);
-            String videoInputPath = finalVideoPath;
-
-            String filePrefix = UUID.randomUUID().toString();
-            String videoOutputName = filePrefix + ".mp4";
-            String coverOutputName = filePrefix + ".jpg";
-            finalVideoPath = String.format("%s/%s/video/%s", FILE_BASE,userId, videoOutputName);
-            finalCoverPath = String.format("%s/%s/video/%s", FILE_BASE,userId, coverOutputName);
-            // 合并视频和背景音乐
-            ffmpegUtils.mergeVideoAndBackgroundMusic(videoInputPath, mp3InputPath, videoSeconds, finalVideoPath);
-        }
-        // 生成视频缩略图
-        ffmpegUtils.createVideoThumbnail(finalVideoPath);
-
-        LOGGER.info("finalVideoPath = {} ", finalVideoPath);
-        LOGGER.info("finalCoverPath = {} ", finalCoverPath);
-
-        String videoUrl = uploadToQiniu(finalVideoPath,videoFileName);
-        String coverUrl = uploadToQiniu(finalCoverPath,coverFileName);
 
         // 保存视频信息到数据库
         Video video = new Video();

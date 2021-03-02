@@ -21,6 +21,12 @@ public class User implements Serializable {
     @ApiModelProperty(value = "密码", name = "password", example = "123456", required = true)
     private String password;
 
+    @ApiModelProperty(value = "手机号", name = "mobile", example = "17661297963", required = false)
+    private String mobile;
+
+    @ApiModelProperty(value = "第三方ID", name = "open_id", example = "sswd-ssdd-0121", required = false)
+    private String open_id;
+
     /**
      * 我的头像，如果没有默认给一张
      */
